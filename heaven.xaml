@@ -1,0 +1,19 @@
+﻿<Window x:Class="Heaven.heaven"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Heaven"
+        mc:Ignorable="d"
+        Title="heaven" Height="450" Width="800" ResizeMode="NoResize">
+    <Grid>
+        <TextBlock x:Name="_textCurrentVersion" Text="current version"
+                   FontSize="30" HorizontalAlignment="Center" Margin="0,24,0,340" Width="306"/>
+        <TextBlock x:Name="_textServerVersion" Text="server version"
+           FontSize="30" HorizontalAlignment="Center" Margin="0,94,0,270" Width="306"/>
+        <Button x:Name="buttonUpdate" Content="Обновление" HorizontalAlignment="Center"
+                Click="ButtionUpdateDialogWindow">
+        </Button>
+
+    </Grid>
+</Window>

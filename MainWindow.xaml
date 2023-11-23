@@ -6,29 +6,29 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Heaven"
         mc:Ignorable="d"
-        Title="Heaven" Width="990px" Height="550px" MinWidth="700px"
-        MinHeight="500px">
-    <Grid Background="White">
-        <Border Background="#7FC7FF" MinWidth="600px" MinHeight="40" Margin="55"
+        Title="Heaven" Width="990px" Height="550px" ResizeMode="NoResize">
+    <Grid>
+        <Image Source="/cloud.png" Width="503" HorizontalAlignment="Left" Margin="-170,208,0,-152"></Image>
+        <Image Source="/cloud.png" Width="707" HorizontalAlignment="Left" Margin="635,-220,0,135"></Image>
+        <Border Background="#7FC7FF" MinHeight="40" Margin="175 0 175 0"
                 VerticalAlignment="Center" Padding="40" Grid.ColumnSpan="2"
-                CornerRadius="30">
+                CornerRadius="25">
             <Border.Effect>
-                <DropShadowEffect BlurRadius="30" Opacity="0.5" ShadowDepth="5" RenderingBias="Performance" Direction="270">
-
-                </DropShadowEffect>
+                <DropShadowEffect BlurRadius="30" Opacity="0.5" ShadowDepth="5" RenderingBias="Performance" Direction="270"></DropShadowEffect>
             </Border.Effect>
             <StackPanel>
-                <TextBlock Text="Вход в личный аккаунт" HorizontalAlignment="Center"
+                <TextBlock Text="Вход в личный аккаунт" HorizontalAlignment="Left"
                            FontSize="30" FontWeight="Bold" Foreground="White"
                            Margin="0 0 20 5"></TextBlock>
-                <TextBox materialDesign:HintAssist.Hint="Введите логин" FontSize="25"
+                <TextBox x:Name="loginBox" materialDesign:HintAssist.Hint="Введите логин" FontSize="25"
                          Style="{StaticResource MaterialDesignFloatingHintTextBox}" SelectionBrush="Black" Foreground="White"/>
-                <TextBox materialDesign:HintAssist.Hint="Введите пароль" FontSize="25" 
-                         Style="{StaticResource MaterialDesignFloatingHintTextBox}" Foreground="White" Background="{x:Null}" SelectionBrush="Black" CaretBrush="White"></TextBox>
+                <TextBox x:Name="passwordBox" materialDesign:HintAssist.Hint="Введите пароль" FontSize="25" 
+                         Style="{StaticResource MaterialDesignFloatingHintTextBox}" Foreground="White"
+                         Background="{x:Null}" SelectionBrush="Black" CaretBrush="White"></TextBox>
                 <Grid Margin="0 40 0 20">
                     <Button HorizontalAlignment="Center" FontSize="25" MinHeight="50" Style="{DynamicResource RoundButton}"
                             Content="ВХОД" Foreground="#FF7FC7FF" Padding="10 0 10 0"
-                            FontWeight="Bold" Background="White" BorderBrush="White">
+                            FontWeight="Bold" Background="White" BorderBrush="White" Click="Button_Click">
                         <Button.Effect>
                             <DropShadowEffect BlurRadius="30" Opacity="0.3" ShadowDepth="5" RenderingBias="Performance"
                                               Direction="270"></DropShadowEffect>
@@ -42,12 +42,12 @@
                     <!-- Button "VHOD" -->
                 </Grid>
                 <Grid>
-                    <TextBlock Text="Регистрация аккаунта" FontStyle="Italic" HorizontalAlignment="Left" Foreground="#1620DE" Margin="0 0 0 20"></TextBlock>
-                    <TextBlock Text="Помощь со входом в аккаунт" HorizontalAlignment="Left" Foreground="#0A0665" Margin="0 20 0 0"></TextBlock>
-                    <TextBlock Text="Подробная информация об Y2" HorizontalAlignment="Right" Foreground="White" Margin="0 10 0 0"></TextBlock>
+                    <TextBlock x:Name="registration" Text="Регистрация аккаунта" FontStyle="Italic" HorizontalAlignment="Left"
+                               Foreground="#1620DE" Margin="0 20 0 20" FontSize="13" MouseDown="Registration_Click" Cursor="Arrow"></TextBlock>
+                    <TextBlock Text="Помощь со входом в аккаунт" HorizontalAlignment="Left" Foreground="#0A0665" Margin="0 40 0 0" FontSize="13"></TextBlock>
+                    <TextBlock Text="Подробная информация об Y2" HorizontalAlignment="Right" Foreground="White" Margin="0 30 0 0" FontSize="13"></TextBlock>
                 </Grid>
             </StackPanel>
-
         </Border>
     </Grid>
 </Window>
