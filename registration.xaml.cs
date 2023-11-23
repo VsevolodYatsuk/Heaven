@@ -102,7 +102,7 @@ namespace Heaven
                 }
                 else
                 {
-                    MessageBox.Show("День писи попы");
+                    MessageBox.Show("Проблема");
                 }
 
             }
