@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
@@ -14,6 +16,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using System.Xml;
 
 namespace Heaven
@@ -24,6 +27,12 @@ namespace Heaven
         private string xmlFile = "Assets/version.xml";
         private string _stateLocateVersionXML;
         private string _stateServerVersionXML;
+        private int? idProcessApp = null;
+        private bool appsStarting = false;
+        private DispatcherTimer dispatcherTimer;
+        
+
+
 
         public heaven()
         {
@@ -32,6 +41,7 @@ namespace Heaven
             InitializeComponent();
             LocateVersionXML();
             TextBlock();
+            CheckAppsLaunchTimer();
         }
 
         private void LocateVersionXML()
@@ -111,5 +121,62 @@ namespace Heaven
             }
             
         }
+
+        string str;
+
+        private void ButtonLaunchGame(object sender, RoutedEventArgs e)
+        {
+
+
+            ProcessStartInfo procInfoLauchGame = new ProcessStartInfo();
+            procInfoLauchGame.FileName = @"Game\Battle in the dungeon.exe";
+            Process processApp = new Process();
+            processApp.StartInfo = procInfoLauchGame;
+            processApp.Start();
+            idProcessApp = processApp.Id;
+
+
+
+        }
+
+
+        private void CheckAppsLaunchTimer()
+        {
+            
+
+            dispatcherTimer = new DispatcherTimer();
+            dispatcherTimer.Tick += new EventHandler(SingleAppTimerCheckMethod);
+            dispatcherTimer.Interval = new TimeSpan(0, 0, 2);
+            dispatcherTimer.Start(); 
+        }
+        
+
+        public void SingleAppTimerCheckMethod(object sender, EventArgs ea)
+        {
+
+            Process[] processedUsers = Process.GetProcesses();
+
+            foreach (Process allprocessed in processedUsers)
+            {
+                if (allprocessed.Id == idProcessApp)
+                {
+                    appsStarting = true;
+                    break;
+                }
+                else if (allprocessed.Id != idProcessApp) appsStarting = false;
+            }
+
+            if (appsStarting == false)
+            {
+                AppState.Text = "Открыть игру";
+            }
+            else
+            {
+                AppState.Text = "Игра запущена";
+            }
+        }
+
+
     } 
+
 }
