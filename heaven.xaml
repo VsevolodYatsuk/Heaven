@@ -17,7 +17,10 @@
         <Button x:Name="LaunchGame" Content="Играть"
         Click="ButtonLaunchGame"  FontSize="30" Height="100" Width="152" Margin="498,171,150,163">
         </Button>
-        <TextBlock FontSize="25" x:Name="AppState" Text="Проверка" Margin="498,141,150,213" HorizontalAlignment="Center"></TextBlock>
-
+        <TextBlock x:Name="AppState" Text="Проверка" Margin="498,141,150,213" HorizontalAlignment="Center"></TextBlock>
+        <Button x:Name="DowloadGame" Content="Скачать"
+                 Click="DowloadGame_Click" Height="100" Margin="62,181,629,153"></Button>
+        <Button Content="Удалить игру" x:Name="DeleteGame"
+                Height="100" Margin="201,290,454,44" Click="DeleteGame_Click"></Button>
     </Grid>
 </Window>

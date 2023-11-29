@@ -18,6 +18,18 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using System.Xml;
+using System.IO.Compression;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+using Google.Apis.Auth.OAuth2;
+using Google.Apis.Drive.v3;
+using Google.Apis.Services;
+using Google.Apis.Util.Store;
+using Path = System.IO.Path;
+using System.Net.Http;
+using SharpCompress.Archives;
+using SharpCompress.Common;
 
 namespace Heaven
 {
@@ -129,14 +141,11 @@ namespace Heaven
 
 
             ProcessStartInfo procInfoLauchGame = new ProcessStartInfo();
-            procInfoLauchGame.FileName = @"Game\Battle in the dungeon.exe";
+            procInfoLauchGame.FileName = @"C:\Y2\Heaven\heavenGame\game\BGC 1.exe";
             Process processApp = new Process();
             processApp.StartInfo = procInfoLauchGame;
             processApp.Start();
             idProcessApp = processApp.Id;
-
-
-
         }
 
 
@@ -177,6 +186,74 @@ namespace Heaven
         }
 
 
+        private async void DowloadGame_Click(object sender, RoutedEventArgs e)
+        {
+            string zipFilePath = @"C:\Y2\Heaven\heavenGame\game.rar";
+            string destinationPath = @"C:\Y2\Heaven\heavenGame\";
+
+            if (Directory.Exists(Path.Combine(destinationPath, "game")))
+            {
+                MessageBox.Show("Игра уже скачана на вашем ПК");
+                return;
+            }
+
+            using (HttpClient client = new HttpClient())
+            {
+                byte[] fileData = await client.GetByteArrayAsync("https://github.com/VsevolodYatsuk/game1/raw/main/game.rar");
+                File.WriteAllBytes(zipFilePath, fileData);
+            }
+
+            UnzipFile(zipFilePath, destinationPath);
+
+            // Delete the ZIP file after extraction
+            File.Delete(zipFilePath);
+
+            MessageBox.Show("Download, extraction, and cleanup completed!");
+        }
+
+        private void UnzipFile(string zipFilePath, string destinationPath)
+        {
+            try
+            {
+                using (var archive = ArchiveFactory.Open(zipFilePath))
+                {
+                    foreach (var entry in archive.Entries)
+                    {
+                        if (!entry.IsDirectory)
+                        {
+                            entry.WriteToDirectory(destinationPath, new ExtractionOptions() { ExtractFullPath = true, Overwrite = true });
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error extracting ZIP file: {ex.Message}");
+            }
+        }
+
+        private void DeleteGame_Click(object sender, RoutedEventArgs e)
+        {
+            string destinationPath = @"C:\Y2\Heaven\heavenGame\";
+            string gameFolderPath = Path.Combine(destinationPath, "game");
+
+            if (Directory.Exists(gameFolderPath))
+            {
+                try
+                {
+                    Directory.Delete(gameFolderPath, true);
+                    MessageBox.Show("Игра успешно удалена");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error deleting the game: {ex.Message}");
+                }
+            }
+            else
+            {
+                MessageBox.Show("У тебя этой игры и не было");
+            }
+        }
     } 
 
 }
