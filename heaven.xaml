@@ -17,7 +17,7 @@
         <Button x:Name="LaunchGame" Content="Играть"
         Click="ButtonLaunchGame"  FontSize="30" Height="100" Width="152" Margin="498,171,150,163">
         </Button>
-        <TextBlock x:Name="AppState" Text="Проверка" Margin="498,141,150,213" HorizontalAlignment="Center"></TextBlock>
+        <TextBlock FontSize="25" x:Name="AppState" Text="Проверка" Margin="498,141,150,213" HorizontalAlignment="Center"></TextBlock>
 
     </Grid>
 </Window>
