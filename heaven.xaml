@@ -5,22 +5,65 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Heaven"
         mc:Ignorable="d"
-        Title="heaven" Height="450" Width="800" ResizeMode="NoResize">
+        Title="heaven" Width="900" Height="550" ResizeMode="NoResize">
     <Grid>
-        <TextBlock x:Name="_textCurrentVersion" Text="current version"
-                   FontSize="30" HorizontalAlignment="Center" Margin="0,24,0,340" Width="306"/>
-        <TextBlock x:Name="_textServerVersion" Text="server version"
-           FontSize="30" HorizontalAlignment="Center" Margin="0,94,0,270" Width="306"/>
-        <Button x:Name="buttonUpdate" Content="Обновление" HorizontalAlignment="Center"
-                Click="ButtionUpdateDialogWindow">
+        <Border Background="#7FC7FF" Margin="175 0 175 0" Grid.ColumnSpan="2" VerticalAlignment="Center" Padding="40" CornerRadius="25">
+           
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="30" Opacity="0.5" ShadowDepth="5" RenderingBias="Performance" Direction="270"></DropShadowEffect>
+            </Border.Effect>
+            <StackPanel>
+                <Grid>
+                    <TextBlock x:Name="_textCurrentVersion" Text="Текущая версия: " FontSize="30" HorizontalAlignment="Left"/>
+                    <TextBlock x:Name="_textServerVersion" Text="Актуальая версия: " FontSize="30" HorizontalAlignment="Left" Margin="0 40 0 0"/>
+
+                </Grid>
+                <Grid HorizontalAlignment="Right" Margin="0 40 0 0">
+                    <TextBlock x:Name="AppState" Text="Проверка" HorizontalAlignment="Center" 
+         FontSize="25" Margin="0 0 20 170"></TextBlock>
+                    <Button Background="White"  x:Name="DowloadGame" FontSize="20" Content="Скачать игру" HorizontalAlignment="Right" Width="200" Height="50" Margin="0 0 20 70"
+         Click="DowloadGame_Click" Style="{DynamicResource RoundButton}">
+                        <Button.Effect>
+                            <DropShadowEffect BlurRadius="30" Opacity="0.3" ShadowDepth="5" RenderingBias="Performance"
+           Direction="270"></DropShadowEffect>
+                        </Button.Effect>
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="5"></Setter>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
+                    <Button Content="Удалить игру" Background="White" Height="50" FontSize="20" x:Name="DeleteGame" HorizontalAlignment="Right" Width="200" Margin="0 70 20 0"
+         Click="DeleteGame_Click" Style="{DynamicResource RoundButton}">
+                        <Button.Effect>
+                            <DropShadowEffect BlurRadius="30" Opacity="0.3" ShadowDepth="5" RenderingBias="Performance"
+                 Direction="270"></DropShadowEffect>
+                        </Button.Effect>
+
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="5"></Setter>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
+
+                </Grid>
+
+
+
+            </StackPanel>
+
+
+
+
+        </Border>
+        
+   
+        <Button x:Name="buttonUpdate" Content="Обновление" HorizontalAlignment="Left"
+                Click="ButtionUpdateDialogWindow" Margin="488,424,0,78">
         </Button>
         <Button x:Name="LaunchGame" Content="Играть"
-        Click="ButtonLaunchGame"  FontSize="30" Height="100" Width="152" Margin="498,171,150,163">
+        Click="ButtonLaunchGame"  FontSize="30" Height="100" Width="152" Margin="679,390,69,44">
         </Button>
-        <TextBlock x:Name="AppState" Text="Проверка" Margin="498,141,150,213" HorizontalAlignment="Center"></TextBlock>
-        <Button x:Name="DowloadGame" Content="Скачать"
-                 Click="DowloadGame_Click" Height="100" Margin="62,181,629,153"></Button>
-        <Button Content="Удалить игру" x:Name="DeleteGame"
-                Height="100" Margin="201,290,454,44" Click="DeleteGame_Click"></Button>
     </Grid>
 </Window>
