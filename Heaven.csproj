@@ -144,6 +144,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="DataBase.cs" />
+    <Compile Include="GameInfo.cs" />
     <Compile Include="heaven.xaml.cs">
       <DependentUpon>heaven.xaml</DependentUpon>
     </Compile>

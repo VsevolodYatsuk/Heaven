@@ -4,37 +4,33 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
+using System.Net.Http;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using System.Windows.Threading;
+using System.Windows.Media.Effects;
 using System.Xml;
 using System.IO.Compression;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
-using Google.Apis.Auth.OAuth2;
-using Google.Apis.Drive.v3;
-using Google.Apis.Services;
-using Google.Apis.Util.Store;
-using Path = System.IO.Path;
-using System.Net.Http;
+using System.Windows.Threading;
+using Newtonsoft.Json;
 using SharpCompress.Archives;
 using SharpCompress.Common;
+using System.Net;
 
 namespace Heaven
 {
     public partial class heaven : Window
     {
+        private void AddGameInfo(string name, string gitHubLink)
+        {
+            GameInfo gameInfo = new GameInfo
+            {
+                Name = name,
+                GitHubLink = gitHubLink
+            };
+
+            gamesInfo.Add(gameInfo);
+            SaveGamesInfo();
+        }
 
         private string xmlFile = "Assets/version.xml";
         private string _stateLocateVersionXML;
@@ -42,18 +38,42 @@ namespace Heaven
         private int? idProcessApp = null;
         private bool appsStarting = false;
         private DispatcherTimer dispatcherTimer;
-        
-
-
+        private string gameExePath;
+        private string gameFolderPath;
+        private string configFilePath = "config.txt";
+        private List<GameInfo> gamesInfo = new List<GameInfo>();
 
         public heaven()
         {
+            InitializeComponent();
+            InitializeGamesInfo();
+            LoadConfig();
             ServerXMLDownload();
             ServerVersionXML();
-            InitializeComponent();
             LocateVersionXML();
             TextBlock();
             CheckAppsLaunchTimer();
+        }
+
+        private void InitializeGamesInfo()
+        {
+            gamesInfo.Add(new GameInfo { Name = "Kanava", GitHubLink = "https://github.com/VsevolodYatsuk/game1/raw/main/game.rar" });
+            gamesInfo.Add(new GameInfo { Name = "Tetris", GitHubLink = "https://github.com/VsevolodYatsuk/game1/raw/main/Tetris.rar" });
+            gamesInfo.Add(new GameInfo { Name = "russ_vs_lizards", GitHubLink = "https://github.com/VsevolodYatsuk/game1/raw/main/russ_vs_lizards.rar" });
+            
+        }
+
+        private void LoadConfig()
+        {
+            if (File.Exists(configFilePath))
+            {
+                gameFolderPath = File.ReadAllText(configFilePath);
+            }
+        }
+
+        private void SaveConfig()
+        {
+            File.WriteAllText(configFilePath, gameFolderPath);
         }
 
         private void LocateVersionXML()
@@ -61,9 +81,9 @@ namespace Heaven
             XmlReader reader = XmlReader.Create(xmlFile);
             while (reader.Read())
             {
-                if(reader.NodeType == XmlNodeType.Element)
+                if (reader.NodeType == XmlNodeType.Element)
                 {
-                    if(reader.Name == "Main")
+                    if (reader.Name == "Main")
                     {
                         reader.ReadToFollowing("version");
                         _stateLocateVersionXML = reader.ReadElementContentAsString();
@@ -73,15 +93,16 @@ namespace Heaven
         }
 
         private static WebClient client;
+
         public void ServerXMLDownload()
         {
-            if(client == null || !client.IsBusy)
+            if (client == null || !client.IsBusy)
             {
                 client = new WebClient();
                 client.DownloadFileCompleted += CompleteDownloadVersionXMLServer;
                 client.DownloadFileAsync(new Uri("https://raw.githubusercontent.com/VsevolodYatsuk/Launcher/main/versionServer.xml"), "Assets/versionServer.xml");
             }
-            if(client != null)
+            if (client != null)
             {
                 MessageBox.Show("Debug");
             }
@@ -89,7 +110,7 @@ namespace Heaven
 
         private void CompleteDownloadVersionXMLServer(object sender, AsyncCompletedEventArgs e)
         {
-            if(e.Error !=null || e.Cancelled)
+            if (e.Error != null || e.Cancelled)
             {
                 MessageBox.Show("Ошибка скачивании" + e.Error);
             }
@@ -121,9 +142,10 @@ namespace Heaven
             _textCurrentVersion.Text += _stateLocateVersionXML;
             _textServerVersion.Text += _stateServerVersionXML;
         }
+
         private void ButtionUpdateDialogWindow(object sender, RoutedEventArgs e)
         {
-            if(_stateLocateVersionXML == _stateServerVersionXML)
+            if (_stateLocateVersionXML == _stateServerVersionXML)
             {
                 MessageBox.Show("У вас актуальная версия");
             }
@@ -131,38 +153,37 @@ namespace Heaven
             {
                 MessageBox.Show("Новая версия!" + _stateServerVersionXML);
             }
-            
+
         }
 
         string str;
-
         private void ButtonLaunchGame(object sender, RoutedEventArgs e)
         {
-
-
-            ProcessStartInfo procInfoLauchGame = new ProcessStartInfo();
-            procInfoLauchGame.FileName = @"C:\Y2\Heaven\heavenGame\game\BGC 1.exe";
-            Process processApp = new Process();
-            processApp.StartInfo = procInfoLauchGame;
-            processApp.Start();
-            idProcessApp = processApp.Id;
+            if (!string.IsNullOrEmpty(gameExePath) && File.Exists(gameExePath))
+            {
+                ProcessStartInfo procInfoLauchGame = new ProcessStartInfo();
+                procInfoLauchGame.FileName = gameExePath;
+                Process processApp = new Process();
+                processApp.StartInfo = procInfoLauchGame;
+                processApp.Start();
+                idProcessApp = processApp.Id;
+            }
+            else
+            {
+                MessageBox.Show("Игра не найдена. Сначала скачайте и распакуйте игру.");
+            }
         }
-
 
         private void CheckAppsLaunchTimer()
         {
-            
-
             dispatcherTimer = new DispatcherTimer();
             dispatcherTimer.Tick += new EventHandler(SingleAppTimerCheckMethod);
             dispatcherTimer.Interval = new TimeSpan(0, 0, 2);
-            dispatcherTimer.Start(); 
+            dispatcherTimer.Start();
         }
-        
 
         public void SingleAppTimerCheckMethod(object sender, EventArgs ea)
         {
-
             Process[] processedUsers = Process.GetProcesses();
 
             foreach (Process allprocessed in processedUsers)
@@ -185,13 +206,30 @@ namespace Heaven
             }
         }
 
-
         private async void DowloadGame_Click(object sender, RoutedEventArgs e)
         {
-            string zipFilePath = @"C:\Y2\Heaven\heavenGame\game.rar";
-            string destinationPath = @"C:\Y2\Heaven\heavenGame\";
+            if (ListBoxGames.SelectedItem == null)
+            {
+                MessageBox.Show("Выберите игру для загрузки.");
+                return;
+            }
 
-            if (Directory.Exists(Path.Combine(destinationPath, "game")))
+            string selectedGame = ((ListBoxItem)ListBoxGames.SelectedItem).Name;
+
+            // Проверяем, есть ли информация об игре в базе
+            GameInfo selectedGameInfo = gamesInfo.FirstOrDefault(info => info.Name == selectedGame);
+
+            if (selectedGameInfo == null)
+            {
+                MessageBox.Show($"Информация об игре '{selectedGame}' не найдена.");
+                return;
+            }
+
+            string zipFilePath = Path.Combine(gameFolderPath, $"{selectedGame}.rar");
+            string destinationFolder = gameFolderPath;
+
+            // Проверяем, существует ли уже папка с игрой
+            if (Directory.Exists(destinationFolder))
             {
                 MessageBox.Show("Игра уже скачана на вашем ПК");
                 return;
@@ -199,14 +237,37 @@ namespace Heaven
 
             using (HttpClient client = new HttpClient())
             {
-                byte[] fileData = await client.GetByteArrayAsync("https://github.com/VsevolodYatsuk/game1/raw/main/game.rar");
-                File.WriteAllBytes(zipFilePath, fileData);
+                try
+                {
+                    // Используем async/await для асинхронной загрузки файла
+                    byte[] fileData = await client.GetByteArrayAsync(selectedGameInfo.GitHubLink);
+                    File.WriteAllBytes(zipFilePath, fileData);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Ошибка загрузки игры: {ex.Message}");
+                    return;
+                }
             }
 
-            UnzipFile(zipFilePath, destinationPath);
+            UnzipFile(zipFilePath, destinationFolder);
 
-            // Delete the ZIP file after extraction
-            File.Delete(zipFilePath);
+            // Получаем путь к исполняемому файлу
+            string[] exeFiles = Directory.GetFiles(destinationFolder, "*.exe");
+            if (exeFiles.Length > 0)
+            {
+                gameExePath = exeFiles[0];
+            }
+            else
+            {
+                MessageBox.Show("Не найдено исполняемых файлов (*.exe) в указанной папке.");
+                return;
+            }
+
+            SaveConfig(); // Сохраняем путь к папке игры
+
+            // Добавляем информацию об игре в файл
+            AddGameInfo(selectedGame, selectedGameInfo.GitHubLink);
 
             MessageBox.Show("Download, extraction, and cleanup completed!");
         }
@@ -221,6 +282,12 @@ namespace Heaven
                     {
                         if (!entry.IsDirectory)
                         {
+                            string fileName = Path.GetFileName(entry.Key);
+                            string destinationFile = Path.Combine(destinationPath, fileName);
+
+                            // Проверяем, что директория для файла создана
+                            Directory.CreateDirectory(Path.GetDirectoryName(destinationFile));
+
                             entry.WriteToDirectory(destinationPath, new ExtractionOptions() { ExtractFullPath = true, Overwrite = true });
                         }
                     }
@@ -234,14 +301,14 @@ namespace Heaven
 
         private void DeleteGame_Click(object sender, RoutedEventArgs e)
         {
-            string destinationPath = @"C:\Y2\Heaven\heavenGame\";
-            string gameFolderPath = Path.Combine(destinationPath, "game");
-
-            if (Directory.Exists(gameFolderPath))
+            if (!string.IsNullOrEmpty(gameFolderPath) && Directory.Exists(gameFolderPath))
             {
                 try
                 {
+                    // Удаляем всю папку с игрой
                     Directory.Delete(gameFolderPath, true);
+                    gameFolderPath = null; // Обнуляем путь к папке игры после удаления
+                    SaveConfig(); // Обновляем файл конфигурации
                     MessageBox.Show("Игра успешно удалена");
                 }
                 catch (Exception ex)
@@ -251,9 +318,45 @@ namespace Heaven
             }
             else
             {
-                MessageBox.Show("У тебя этой игры и не было");
+                MessageBox.Show("Игра не найдена. Сначала скачайте и распакуйте игру.");
             }
         }
-    } 
 
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            if (ListBoxGames.Visibility == Visibility.Collapsed)
+            {
+                ListBoxGames.Visibility = Visibility.Visible;
+                ToggleListButton.Content = "Скрыть список";
+                HeaderText.Text = "Открыт список:";
+            }
+            else
+            {
+                ListBoxGames.Visibility = Visibility.Collapsed;
+                ToggleListButton.Content = "Отобразить список";
+                HeaderText.Text = "";
+            }
+        }
+
+        private void ListBoxGames_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (ListBoxGames.SelectedItem != null)
+            {
+                string selectedGame = ((ListBoxItem)ListBoxGames.SelectedItem).Name;
+                _Game.Text = "Игра: " + selectedGame;
+
+                AppState.Visibility = Visibility.Visible;
+
+                DowloadGame.Visibility = Visibility.Visible;
+                DeleteGame.Visibility = Visibility.Visible;
+                LaunchGame.Visibility = Visibility.Visible;
+            }
+        }
+
+        private void SaveGamesInfo()
+        {
+            string jsonContent = JsonConvert.SerializeObject(gamesInfo, Newtonsoft.Json.Formatting.Indented);
+            File.WriteAllText("gamesInfo.json", jsonContent);
+        }
+    }
 }
